@@ -1,0 +1,54 @@
+I can do that. I need a few concrete decisions before I start.
+
+1. Auth scope  
+Do you want just login/logout, or also roles (e.g., `admin`, `reader`)?
+
+2. Access model  
+Should the mdBook content be fully protected (only visible after login), or allow a public landing page with protected book content?
+
+3. Hosting topology  
+Do you want:
+1. Node/Express serving both API and React app, and gating access before calling `mdbook build`
+2. Separate dev servers (React dev server + API), with production unified under Node
+
+4. MongoDB setup  
+Do you already have a MongoDB URI and database name, or should I scaffold a `.env` with placeholders?
+
+5. Build trigger  
+Should `mdbook build` run on every authorized request (slow), or on-demand (e.g., after login or when content changes), with caching?
+
+Reply with short answers (e.g., “roles: admin/reader”, “protected content only”, “unified under Node”, “use placeholder env”, “build on login + cache”).
+
+------------------
+Summary
+- Added a Node/Express auth server with MongoDB, JWT-based auth, admin/reader roles, and on-demand `mdbook build` gated behind authentication.
+- Added a React (Vite) client for login, admin user creation, and opening the protected mdBook.
+- Added Docker setup for MongoDB, server, and client, plus updated `.gitignore` and `README.md`.
+
+Key files
+- Server: `server/src/index.js`, `server/src/utils/mdbook.js`, `server/src/routes/auth.js`, `server/src/routes/admin.js`
+- Client: `client/src/App.jsx`, `client/src/api.js`, `client/src/styles.css`
+- Docker: `docker-compose.yml`, `server/Dockerfile`, `client/Dockerfile`
+
+How to run (Docker)
+1. `docker compose up --build`
+2. Open `http://localhost:5173`
+3. Login with `admin@example.com` / `admin1234`
+4. Click “Open Book” to access the protected mdBook (served from the Node server)
+
+Notes
+- `mdbook build` is executed on-demand the first time an authenticated user hits `/book`, and whenever source files change.
+- Admins can create users from the portal.
+
+I didn’t run any commands beyond file creation/edits.
+
+Next steps
+1. If you want a different auth flow (e.g., cookies-only or no token in URL), tell me and I’ll adjust.
+2. If you want a production-ready build (single server hosting React + book), I can add a prod Docker target.
+
+docker-compose exec mongo mongosh
+use mdbook_auth
+db.users.find().pretty()
+
+
+
